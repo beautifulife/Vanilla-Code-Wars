@@ -1,8 +1,58 @@
 body {
-  padding: 50px;
+  padding: 20px 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  text-align: center;
 }
 
 a {
   color: #00B7FF;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.app__main {
+  display: flex;
+  border: 1px solid black;
+}
+
+.app__main__navigator {
+  width: 120px;
+  border-right: 1px solid black;
+}
+
+.app__main__navigator__list {
+  
+}
+
+.app__main__navigator__list > li {
+  margin: 0px;
+  padding: 5px;
+}
+
+.app__main__navigator__list > li.active,
+.app__main__navigator__list > li.active:hover {
+  background-color: green;
+}
+
+.app__main__navigator__list > li:hover {
+  background-color: gray;
+  cursor: pointer;
+}
+
+.app__main__problems {
+  flex: 1;
+  text-align: left;
+}
+
+.app__main__problems__list {
+
 }
