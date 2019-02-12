@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' type="text/css" href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <div class="app">
+      <% include ./header %>
+      <div class="app__main">
+        <%- include('./app_problem', {problem: problem}); %>
+      </div>
+      <% include ./footer %>
+    </div>
+  </body>
+  <link rel="stylesheet" href="/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="/codemirror/theme/monokai.css">
+  <link rel="stylesheet" href="/codemirror/addon/hint/show-hint.css" />
+  <script type="text/javascript" src="/codemirror/lib/CodeMirror.js"></script>
+  <script type="text/javascript" src="/codemirror/mode/javascript/javascript.js"></script>
+  <script type="text/javascript" src="/codemirror/addon/hint/show-hint.js"></script>
+  <script src="/javascripts/index.js"></script>
+</html>
