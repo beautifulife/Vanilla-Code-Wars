@@ -2,41 +2,47 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' type="text/css" href='stylesheets/style.css' />
+    <link rel='stylesheet' type="text/css" href='/stylesheets/style.css' />
   </head>
   <body>
     <div class="app">
-      <header class="app__header">
-        <h1 class="app__header__title"><a href="/">Codewars</a></h1>
-        <h2 class="app__header__title">코딩 전쟁이 일어난다. 모든 대원들, 전투 준비!</h2>
-      </header>
+      <% include ./header %>
       <div class="app__main">
         <div class="app__main__navigator">
           <ul class="app__main__navigator__list">
-            <li class="active"><a href="/">All</a></li>
-            <li><a href="/?level=1">Level 1</a></li>
-            <li><a href="/?level=2">Level 2</a></li>
-            <li><a href="/?level=3">Level 3</a></li>
+            <span>Levels :</span>
+            <% ['all', '1', '2', '3'].forEach(function(value) { %>
+              <% if(value === level) { %>
+                <li class="active">
+              <% } else { %>
+                <li>
+              <% } %>
+                  <% if(value === 'all') { %>
+                    <a href="/">All</a>
+                  <% } else { %>
+                    <a href="/?level=<%= value %>">Level <%= value %></a>
+                  <% } %>
+                </li>
+            <% }) %>
           </ul>
         </div>
         <div class="app__main__problems">
+          <p class="app__main__problems__info"><%= problems.length %> Kata Found</p>
           <ul class="app__main__problems__list">
-            <% if(level){ %>
-              <span><%= level %></span>
-            <% } %>
-            <% problems.forEach(function(problem){ %>
-              <% if (level === 'all' || level == problem.difficulty_level) { %>
-                <li>
-                  <p><a href="/problems/<%= problem.id %>"><%= problem.title %></a></p>
-                  <span>정답자: <%= problem.solution_count %>명</span>
-                  <span>난이도: Level <%= problem.difficulty_level %></span>
-                </li>
-              <% } %>
+            <% problems.forEach(function(problem) { %>
+              <li class="app__main__problems__list__item">
+                <h3><a href="/problems/<%= problem.id %>"><%= problem.title %></a></h3>
+                <span>정답자: <%= problem.solution_count %>명</span>
+                <span>|</span>
+                <span>난이도: Level <%= problem.difficulty_level %></span>
+              </li>
+              <div class="app__main__problems__list__line"></div>
             <% }) %>
           </ul>
         </div>
       </div>
+      <% include ./footer %>
     </div>
   </body>
-  <script src="javascripts/index.js"></script>
+  <script src="/javascripts/index.js"></script>
 </html>

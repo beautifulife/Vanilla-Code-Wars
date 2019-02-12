@@ -1,18 +1,31 @@
 const express = require('express');
 const path = require('path');
+const sassMiddleware = require('node-sass-middleware');
+const bodyParser = require('body-parser');
 const index = require('./routes/index');
 
 const app = express();
 
-// app.use(express.json());
+
+// Express Configuration
+app.use(sassMiddleware({
+  src: path.join(__dirname, 'public'),
+  dest: path.join(__dirname, 'public'),
+  debug: true,
+  outputStyle: 'compressed'
+}));
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'lib')));
 app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   var err = new Error('Not Found');
+
   err.status = 404;
   next(err);
 });

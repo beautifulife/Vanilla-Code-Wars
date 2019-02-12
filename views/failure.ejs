@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' type="text/css" href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <div class="app">
+      <% include ./header %>
+      <div class="app__main">
+        <%- include('./app_problem', {problem: problem}); %>
+      </div>
+      <% include ./footer %>
+    </div>
+  </body>
+  <script src="/javascripts/index.js"></script>
+</html>

@@ -63,7 +63,7 @@ router.post('/problems/:problem_id', (req, res, next) => {
 
   readProblems((problems) => {
     const problem = problems.find((item) => {
-      return item.id === parseInt(req.params.problem_id);
+      return item.id === parseInt(req.params.problem_id, 10);
     });
     const testResult = {
       numberOfTests: problem.tests.length,
@@ -76,27 +76,32 @@ router.post('/problems/:problem_id', (req, res, next) => {
 
       if (testCodeResult === test.solution) {
         testResult.numberOfCorrectAnswer++;
-        testResult.results.push([`test${index}`, true]);
+        testResult.results.push({
+          testCodeResult,
+          isCorrect: 'correct'
+        });
       } else {
-        testResult.results.push([`test${index}`, false]);
+        testResult.results.push({
+          testCodeResult,
+          isCorrect: 'wrong'
+        });
       }
     });
-  
+
+    problem.testResult = testResult;
+
     debugger;
     if (testResult.numberOfTests === testResult.numberOfCorrectAnswer) {
       res.render('success', {
-        title: '정답',
+        title: '바닐라코딩',
         problem,
-        testResult
       });
     } else {
       res.render('failure', {
-        title: '틀림',
+        title: '바닐라코딩',
         problem,
-        testResult
       });
     }
-    //함수를 받는다(텍스트로) -> parse -> 함수를 실행한다. -> 결과일치확인
   });
 });
 
