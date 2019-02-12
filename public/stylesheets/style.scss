@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css?family=Lato|Press+Start+2P');
+
+
+body {
+  margin: 0;
+  height: 100vh;
+  text-align: center;
+  font: 14px "Lato", "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: rgba(255, 255, 255, 0.8);
+  background-color: black;
+}
+
+a, button {
+  all: unset;
+  cursor: pointer;
+}
+
+textarea {
+  all: unset;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  max-width: 700px;
+  height: 100%;
+  margin: 0 auto;
+
+  &__header {
+    margin-bottom: 10px;
+
+    &__title {
+      padding: 1.5em 0;
+      font-family: 'Press Start 2P', cursive;
+      letter-spacing: 0.6rem;
+      color: #FF6F61;
+      text-shadow: 3px 3px #FEA166, 6px 6px #9D446E;
+    }
+  }
+
+  &__main {
+    flex: 1;
+    display: flex;
+    min-height: 60vh;
+    border-radius: 10px;
+    box-shadow: 0px 0px 30px 0px #FF6F61;
+
+    &__navigator {
+      width: 140px;
+      border-radius: 10px 0 0 10px;
+      background-color: #101011;
+
+      &__list {
+        span {
+          display: inline-block;
+          padding: 10px;
+        }
+
+        li {
+          margin: 0px;
+          padding: 10px;
+
+          &:hover {
+            color: gray;
+            cursor: pointer;
+          }
+        }
+
+        li.active, li.active:hover {
+          color: #FEA166;
+        }
+      }
+    }
+
+    &__problems {
+      flex: 1;
+      text-align: center;
+      padding : 10px 20px;
+      border-radius: 0 10px 10px 0;
+      background-color: #151518;
+
+      &__info {
+        text-align: left;
+        margin-bottom: 25px;
+      }
+
+      &__list {
+        text-align: left;
+
+        &__item {
+          margin-bottom: 10px;
+
+          h3 {
+            margin: 10px 0;
+          }
+        }
+
+        &__line {
+          margin: 25px;
+          border-bottom: 1px solid rgba(254, 160, 102, 0.2);
+        }
+      }
+    }
+
+    &__problem {
+      flex: 1;
+      padding: 20px;
+
+      &__title {
+        margin-bottom: 10px 0;
+        text-align: left;
+
+        h1 {
+          display: inline-block;
+          margin-right: 10px;
+        }
+
+        span {
+          margin: 0 2px;
+        }
+      }
+
+      &__description {
+        margin: 10px 0;
+        text-align: left;
+
+        P {
+          padding: 10px;
+          border-radius: 5px;
+          background-color: gray;
+        }
+      }
+
+      &__solution {
+        textarea {
+          width: calc(100% - 20px);
+          text-align: left;
+          height: 150px;
+          padding: 10px;
+          margin: 10px 0 ;
+          border: 1px solid #FEA166;
+          border-radius: 10px;
+          font-size: 1rem;
+        }
+        
+        button {
+          text-align: center;
+          width: calc(100% - 20px);
+          padding: 5px;
+          border-radius: 15px;
+          background-color: rgba(128, 128, 128, 0.4);
+        }
+      }
+
+      &__result {
+        border: 1px solid #FEA166;
+        border-radius: 10px;
+      }
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    height: 50px;
+  }
+}
