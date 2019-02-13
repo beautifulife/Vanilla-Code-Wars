@@ -1,5 +1,7 @@
 const express = require('express');
 const fs = require('fs');
+const util = require('util');
+const vm = require('vm');
 
 const router = express.Router();
 
@@ -53,14 +55,6 @@ router.get('/problems/:problem_id', (req, res, next) => {
 });
 
 router.post('/problems/:problem_id', (req, res, next) => {
-  const solution = new Function(`return ${req.body.solution}`)();
-
-  if (!req.body.solution || typeof solution !== 'function') {
-    res.status(400).send('wrong request sent');
-  }
-
-  // function solution(number) { return 2 }
-
   readProblems((problems) => {
     const problem = problems.find((item) => {
       return item.id === parseInt(req.params.problem_id, 10);
@@ -71,8 +65,18 @@ router.post('/problems/:problem_id', (req, res, next) => {
       results: []
     };
 
-    problem.tests.forEach((test, index) => {
-      const testCodeResult = new Function(`${solution} return ${test.code}`)();
+    problem.tests.forEach((test) => {
+      const sandbox = {};
+      let testCodeResult;
+
+      try {
+        debugger;
+        testCodeResult = vm.runInNewContext(req.body.solution + test.code, sandbox);
+      } catch (err) {
+        res.status(400).render('service_error', {
+          title: '바닐라코딩',
+        });
+      }
 
       if (testCodeResult === test.solution) {
         testResult.numberOfCorrectAnswer++;
@@ -88,9 +92,9 @@ router.post('/problems/:problem_id', (req, res, next) => {
       }
     });
 
+    problem.userSolution = req.body.solution;
     problem.testResult = testResult;
 
-    debugger;
     if (testResult.numberOfTests === testResult.numberOfCorrectAnswer) {
       res.render('success', {
         title: '바닐라코딩',
