@@ -1,3 +1,22 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' type="text/css" href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <div class="app">
+      <% include ./header %>
+      <div class="app__main">
+        <%- include('./app_problem', {problem: problem}); %>
+      </div>
+      <% include ./footer %>
+    </div>
+    <div class="app__modal">
+      <span class="app__modal__comment">Error occured</span>
+      <span class="app__modal__button">Back to the problem</span>
+    </div>
+  </body>
+  <% include ./codemirror %>
+  <script src="/javascripts/problem.js"></script>
+</html>
