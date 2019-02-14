@@ -6,8 +6,8 @@ const index = require('./routes/index');
 
 const app = express();
 
-
 // Express Configuration
+app.set('view engine', 'ejs');
 app.use(sassMiddleware({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
@@ -15,8 +15,6 @@ app.use(sassMiddleware({
   outputStyle: 'compressed'
 }));
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(express.static(path.join(__dirname, 'lib')));
-app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -24,7 +22,7 @@ app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-  var err = new Error('Not Found');
+  const err = new Error('Not Found');
 
   err.status = 404;
   next(err);
@@ -38,11 +36,11 @@ app.use((err, req, res, next) => {
 
   // render the error page
   res.status(err.status || 500);
-  res.json({
+  res.render('service_error', {
+    title: 'Codewars-error',
     message: err.message,
-    error: err
+    status: err.status
   });
-  res.send('error');
 });
 
 module.exports = app;

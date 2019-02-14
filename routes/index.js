@@ -1,28 +1,126 @@
 const express = require('express');
-const fs = require('fs');
-const util = require('util');
 const vm = require('vm');
+const mongoose = require('mongoose');
+const ProblemsModel = require('./model');
 
 const router = express.Router();
 
-// router.use(express.json());
+mongoose.connect('mongodb://localhost/codewars');
 
-function readProblems(callback) {
-  fs.readFile('data/problems.json', 'utf8', (err, data) => {
-    if (err) throw err;
+const db = mongoose.connection;
 
-    const problems = JSON.parse(data);
-
-    callback(problems);
-  });
-}
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
+  console.log('success db connect');
+});
 
 /* GET home page. */
+router.get('/problems/:problem_id', (req, res, next) => {
+  ProblemsModel.find({ id: parseInt(req.params.problem_id, 10) }, (err, problems) => {
+    if (err) {
+      return console.error(err);
+    }
+
+    if (!problems.length) {
+      const error = new Error('Not Found');
+
+      error.status = 404;
+
+      return next(error);
+    }
+
+    const problem = problems[0];
+
+    res.render('problem', {
+      title: `Codewars-${problem.title}`,
+      problem,
+      testResult: ''
+    });
+  });
+});
+
+router.post('/problems/:problem_id', (req, res, next) => {
+  ProblemsModel.find({ id: parseInt(req.params.problem_id, 10) }, (err, problems) => {
+    if (err) {
+      return console.error(err);
+    }
+
+    const problem = problems[0];
+  
+    const testResult = {
+      numberOfTests: problem.tests.length,
+      numberOfCorrectAnswer: 0,
+      results: []
+    };
+
+    problem.userSolution = req.body.solution;
+
+    try {
+      problem.tests.forEach((test) => {
+        const testCodeResult = vm.runInNewContext(req.body.solution + test.code, {});
+
+        if (testCodeResult === test.solution) {
+          testResult.numberOfCorrectAnswer++;
+          testResult.results.push({
+            testCodeResult,
+            resultStatus: 'correct'
+          });
+        } else {
+          testResult.results.push({
+            testCodeResult,
+            resultStatus: 'wrong'
+          });
+        }
+      });
+    } catch (err) {
+      const testCodeResult = err.message;
+
+      testResult.results.push({
+        testCodeResult,
+        resultStatus: 'error'
+      });
+
+      return res.render('error', {
+        title: `Codewars-${problem.title}(Error)`,
+        problem,
+        testResult,
+        errorMessage: err.message
+      });
+    }
+
+    if (testResult.numberOfTests === testResult.numberOfCorrectAnswer) {
+      res.render('success', {
+        title: `Codewars-${problem.title}(Success)`,
+        problem,
+        testResult
+      });
+    } else {
+      res.render('failure', {
+        title: `Codewars-${problem.title}(Failure)`,
+        problem,
+        testResult
+      });
+    }
+  });
+});
+
 router.get('/', (req, res, next) => {
-  readProblems((problems) => {
+  ProblemsModel.find({}, (err, problems) => {
+    if (err) {
+      console.error(err);
+
+      const err = new Error('Internal Server Error');
+
+      err.status = 500;
+
+      return next(err);
+    }
+
+    const levels = ['all', '1', '2', '3'];
     const level = req.query.level || 'all';
+
     problems = problems.filter((problem) => {
-      if (level === 'all' || parseInt(level) === problem.difficulty_level) {
+      if (level === 'all' || problem.difficulty_level === parseInt(level, 10)) {
         return true;
       }
 
@@ -30,82 +128,11 @@ router.get('/', (req, res, next) => {
     });
 
     res.render('index', {
-      title: '바닐라코딩',
+      title: 'Codewars',
+      levels,
       problems,
       level,
     });
-  });
-});
-
-router.get('/problems/:problem_id', (req, res, next) => {
-  readProblems((problems) => {
-    const problem = problems.find((item) => {
-      return item.id === parseInt(req.params.problem_id);
-    });
-
-    if (!problem) {
-      res.status(404).send('wrong address');
-    }
-
-    res.render('problem', {
-      title: '바닐라코딩',
-      problem,
-    });
-  });
-});
-
-router.post('/problems/:problem_id', (req, res, next) => {
-  readProblems((problems) => {
-    const problem = problems.find((item) => {
-      return item.id === parseInt(req.params.problem_id, 10);
-    });
-    const testResult = {
-      numberOfTests: problem.tests.length,
-      numberOfCorrectAnswer: 0,
-      results: []
-    };
-
-    problem.tests.forEach((test) => {
-      const sandbox = {};
-      let testCodeResult;
-
-      try {
-        debugger;
-        testCodeResult = vm.runInNewContext(req.body.solution + test.code, sandbox);
-      } catch (err) {
-        res.status(400).render('service_error', {
-          title: '바닐라코딩',
-        });
-      }
-
-      if (testCodeResult === test.solution) {
-        testResult.numberOfCorrectAnswer++;
-        testResult.results.push({
-          testCodeResult,
-          isCorrect: 'correct'
-        });
-      } else {
-        testResult.results.push({
-          testCodeResult,
-          isCorrect: 'wrong'
-        });
-      }
-    });
-
-    problem.userSolution = req.body.solution;
-    problem.testResult = testResult;
-
-    if (testResult.numberOfTests === testResult.numberOfCorrectAnswer) {
-      res.render('success', {
-        title: '바닐라코딩',
-        problem,
-      });
-    } else {
-      res.render('failure', {
-        title: '바닐라코딩',
-        problem,
-      });
-    }
   });
 });
 
