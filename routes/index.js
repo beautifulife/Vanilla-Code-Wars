@@ -1,7 +1,7 @@
 const express = require('express');
 const vm = require('vm');
 const mongoose = require('mongoose');
-const ProblemsModel = require('./model');
+const Problems = require('./model');
 
 const router = express.Router();
 
@@ -14,22 +14,26 @@ db.once('open', () => {
   console.log('success db connect');
 });
 
+function createInternalError(err) {
+  console.error(err);
+
+  const error = new Error('Internal Server Error');
+
+  error.status = 500;
+
+  return error;
+}
+
 /* GET home page. */
 router.get('/problems/:problem_id', (req, res, next) => {
-  ProblemsModel.find({ id: parseInt(req.params.problem_id, 10) }, (err, problems) => {
+  Problems.findOne({ _id: req.params.problem_id }, (err, problem) => {
     if (err) {
-      return console.error(err);
+      return next(createInternalError(err));
     }
 
-    if (!problems.length) {
-      const error = new Error('Not Found');
-
-      error.status = 404;
-
-      return next(error);
+    if (!problem) {
+      return next();
     }
-
-    const problem = problems[0];
 
     res.render('problem', {
       title: `Codewars-${problem.title}`,
@@ -40,13 +44,11 @@ router.get('/problems/:problem_id', (req, res, next) => {
 });
 
 router.post('/problems/:problem_id', (req, res, next) => {
-  ProblemsModel.find({ id: parseInt(req.params.problem_id, 10) }, (err, problems) => {
+  Problems.findOne({ _id: req.params.problem_id }, (err, problem) => {
     if (err) {
-      return console.error(err);
+      return next(createInternalError(err));
     }
 
-    const problem = problems[0];
-  
     const testResult = {
       numberOfTests: problem.tests.length,
       numberOfCorrectAnswer: 0,
@@ -57,7 +59,11 @@ router.post('/problems/:problem_id', (req, res, next) => {
 
     try {
       problem.tests.forEach((test) => {
-        const testCodeResult = vm.runInNewContext(req.body.solution + test.code, {});
+        const testCodeResult = vm.runInNewContext(
+          req.body.solution + test.code,
+          {},
+          { timeout: 5000 }
+        );
 
         if (testCodeResult === test.solution) {
           testResult.numberOfCorrectAnswer++;
@@ -105,15 +111,9 @@ router.post('/problems/:problem_id', (req, res, next) => {
 });
 
 router.get('/', (req, res, next) => {
-  ProblemsModel.find({}, (err, problems) => {
+  Problems.find({}, (err, problems) => {
     if (err) {
-      console.error(err);
-
-      const err = new Error('Internal Server Error');
-
-      err.status = 500;
-
-      return next(err);
+      return next(createInternalError(err));
     }
 
     const levels = ['all', '1', '2', '3'];
@@ -127,11 +127,13 @@ router.get('/', (req, res, next) => {
       return false;
     });
 
+    console.log(levels);
+
     res.render('index', {
       title: 'Codewars',
       levels,
       problems,
-      level,
+      level
     });
   });
 });
