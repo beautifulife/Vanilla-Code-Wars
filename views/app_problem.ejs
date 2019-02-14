@@ -1,6 +1,6 @@
 <div class="app__main__problem">
   <div class="app__main__problem__title">
-    <h1 ><%= problem.title %></h1>
+    <h1><%= problem.title %></h1>
     <span>정답자: <%= problem.solution_count %>명</span>
     <span>|</span>
     <span>난이도: Level <%= problem.difficulty_level %></span>
@@ -11,20 +11,23 @@
       <p><%= problem.description %></p>
     </div>
     <div class="app__main__problem__innerWrapper">
-      <form class="app__main__problem__solution" method="POST">
+      <form class="app__main__problem__solution" method="post">
         <span class="app__main__problem__solution__subject">Solution :</span>
-        <textarea name="solution" id="editor" wrap="soft">function solution(value) { return answer; }</textarea>
+        <% if(problem.userSolution) { %>
+        <textarea name="solution" id="editor"><%= problem.userSolution %></textarea>
+        <% } else { %>
+        <textarea name="solution" id="editor">function solution(value) { return value; }</textarea>
+        <% } %>
         <div class="app__main__problem__solution__submit">
           <button>전송</button>
         </div>
       </form>
       <div class="app__main__problem__result">
         <span class="app__main__problem__result__subject">
-          Result :
-          <% if(problem.testResult) { %>
-            <span><%= problem.testResult.numberOfCorrectAnswer %></span>
-            <span>/</span>
-            <span><%= problem.testResult.numberOfTests %></span>
+          Result : <% if(testResult) { %>
+          <span><%= testResult.numberOfCorrectAnswer %></span>
+          <span>/</span>
+          <span><%= testResult.numberOfTests %></span>
           <% } %>
         </span>
         <table class="app__main__problem__result__example">
@@ -32,29 +35,31 @@
             <th>test</th>
             <th>&rarr;</th>
             <th>expacted</th>
-            <% if(problem.testResult) { %>
-              <th>&rarr;</th>
-              <th>occured</th>
-              <th>&rarr;</th>
-              <th>result</th>
+            <% if(testResult) { %>
+            <th>&rarr;</th>
+            <th>occured</th>
+            <th>&rarr;</th>
+            <th>result</th>
             <% } %>
           </tr>
-          <% problem.tests.forEach(function(test, index) { %>
-            <% if(problem.testResult) { %>
-              <tr class="<%= problem.testResult.results[index].isCorrect %>">
+          <% problem.tests.forEach(function(test, index) { %> <% if(testResult &&
+          testResult.results && testResult.results[index]) { %>
+          <tr class="<%= testResult.results[index].resultStatus %>">
             <% } else { %>
-              <tr>
+          </tr>
+          <tr>
             <% } %>
-                <td><%= test.code %></td>
-                <td>&rarr;</td>
-                <td><%= test.solution %></td>
-                <% if(problem.testResult) { %>
-                  <td>&rarr;</td>
-                  <td><%= problem.testResult.results[index].testCodeResult %></td>
-                  <td>&rarr;</td>
-                  <td><%= problem.testResult.results[index].isCorrect %></td>
-                <% } %>
-              </tr>
+            <td><%= test.code %></td>
+            <td>&rarr;</td>
+            <td><%= test.solution %></td>
+            <% if(testResult && testResult.results &&
+            testResult.results[index]) { %>
+            <td>&rarr;</td>
+            <td><%= testResult.results[index].testCodeResult %></td>
+            <td>&rarr;</td>
+            <td><%= testResult.results[index].resultStatus %></td>
+            <% } %>
+          </tr>
           <% }) %>
         </table>
       </div>

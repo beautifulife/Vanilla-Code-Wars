@@ -8,14 +8,15 @@
     <div class="app">
       <% include ./header %>
       <div class="app__main">
-        <%- include('./app_problem', {problem: problem}); %>
+        <% include ./app_problem %>
       </div>
       <% include ./footer %>
       <div class="app__modal">
         <span class="app__modal__comment">Congrats! Success!</span>
-        <a href="/"><span class="app__modal__link">back to the list</span></a>
+        <a href="/"><span class="app__modal__button">Back to the list</span></a>
       </div>
     </div>
   </body>
-  <script src="/javascripts/index.js"></script>
+  <% include ./codemirror %>
+  <script src="/javascripts/problem.js"></script>
 </html>
