@@ -13,8 +13,8 @@
     <div class="app__main__problem__innerWrapper">
       <form class="app__main__problem__solution" method="post">
         <span class="app__main__problem__solution__subject">Solution :</span>
-        <% if(problem.userSolution) { %>
-        <textarea name="solution" id="editor"><%= problem.userSolution %></textarea>
+        <% if(typeof userSolution === 'string') { %>
+        <textarea name="solution" id="editor"><%= userSolution %></textarea>
         <% } else { %>
         <textarea name="solution" id="editor">function solution(value) { return value; }</textarea>
         <% } %>
@@ -24,8 +24,9 @@
       </form>
       <div class="app__main__problem__result">
         <span class="app__main__problem__result__subject">
-          Result : <% if(testResult) { %>
-          <span><%= testResult.numberOfCorrectAnswer %></span>
+          Result : 
+          <% if(typeof testResult === 'object') { %>
+          <span><%= testResult.numberOfCorrectAnswers %></span>
           <span>/</span>
           <span><%= testResult.numberOfTests %></span>
           <% } %>
@@ -35,25 +36,23 @@
             <th>test</th>
             <th>&rarr;</th>
             <th>expacted</th>
-            <% if(testResult) { %>
+            <% if(typeof testResult === 'object') { %>
             <th>&rarr;</th>
             <th>occured</th>
             <th>&rarr;</th>
             <th>result</th>
             <% } %>
           </tr>
-          <% problem.tests.forEach(function(test, index) { %> <% if(testResult &&
-          testResult.results && testResult.results[index]) { %>
+          <% problem.tests.forEach(function(test, index) { %>
+            <% if(typeof testResult === 'object' && testResult.results[index]) { %>
           <tr class="<%= testResult.results[index].resultStatus %>">
             <% } else { %>
-          </tr>
           <tr>
             <% } %>
             <td><%= test.code %></td>
             <td>&rarr;</td>
             <td><%= test.solution %></td>
-            <% if(testResult && testResult.results &&
-            testResult.results[index]) { %>
+            <% if(typeof testResult === 'object' && testResult.results[index]) { %>
             <td>&rarr;</td>
             <td><%= testResult.results[index].testCodeResult %></td>
             <td>&rarr;</td>
