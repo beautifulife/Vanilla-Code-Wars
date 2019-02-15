@@ -26,6 +26,10 @@ function createInternalError(err) {
 
 /* GET home page. */
 router.get('/problems/:problem_id', (req, res, next) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.problem_id)) {
+    return next();
+  }
+
   Problems.findOne({ _id: req.params.problem_id }, (err, problem) => {
     if (err) {
       return next(createInternalError(err));
@@ -44,6 +48,10 @@ router.get('/problems/:problem_id', (req, res, next) => {
 });
 
 router.post('/problems/:problem_id', (req, res, next) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.problem_id)) {
+    return next();
+  }
+
   Problems.findOne({ _id: req.params.problem_id }, (err, problem) => {
     if (err) {
       return next(createInternalError(err));
@@ -54,6 +62,10 @@ router.post('/problems/:problem_id', (req, res, next) => {
       numberOfCorrectAnswer: 0,
       results: []
     };
+    const sendBox = {
+      setTimeout: global.setTimeout,
+      setInterval: global.setInterval
+    };
 
     problem.userSolution = req.body.solution;
 
@@ -61,7 +73,7 @@ router.post('/problems/:problem_id', (req, res, next) => {
       problem.tests.forEach((test) => {
         const testCodeResult = vm.runInNewContext(
           req.body.solution + test.code,
-          {},
+          sendBox,
           { timeout: 5000 }
         );
 
@@ -95,6 +107,16 @@ router.post('/problems/:problem_id', (req, res, next) => {
     }
 
     if (testResult.numberOfTests === testResult.numberOfCorrectAnswer) {
+      Problems.updateOne(
+        { _id: req.params.problem_id},
+        { solution_count: problem.solution_count + 1 },
+        (err) => {
+          if (err) {
+            return next(createInternalError(err));
+          }
+        }
+      );
+
       res.render('success', {
         title: `Codewars-${problem.title}(Success)`,
         problem,
@@ -107,6 +129,27 @@ router.post('/problems/:problem_id', (req, res, next) => {
         testResult
       });
     }
+  });
+});
+
+router.post('/register', (req, res, next) => {
+  const {
+    title,
+    difficulty_level,
+    description,
+    tests,
+  } = req.body;
+    
+  Problems.create({
+    title,
+    solution_count: 0,
+    difficulty_level,
+    description,
+    tests
+  }, (err, problem) => { return next(createInternalError(err)); });
+
+  res.json({
+    message: 'registered'
   });
 });
 

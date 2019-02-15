@@ -27,11 +27,14 @@
           </ul>
         </div>
         <div class="app__main__problems">
-          <p class="app__main__problems__info"><%= problems.length %> Kata Found</p>
+          <div class="app__main__problems__info">
+            <span class="app__main__problems__info__result"><%= problems.length %> Kata Found</span>
+            <button class="app__main__problems__info__register">Add Kata</button>
+          </div>
           <ul class="app__main__problems__list">
             <% problems.forEach(function(problem) { %>
               <li class="app__main__problems__list__item">
-                <h3><a href="/problems/<%= problem.id %>"><%= problem.title %></a></h3>
+                <h3><a href="/problems/<%= problem._id %>"><%= problem.title %></a></h3>
                 <span>정답자: <%= problem.solution_count %>명</span>
                 <span>|</span>
                 <span>난이도: Level <%= problem.difficulty_level %></span>
@@ -42,6 +45,46 @@
         </div>
       </div>
       <% include ./footer %>
+      <div class="app__modal hidden">
+        <div class="app__modal__template">
+          <form name="register" class="app__modal__template__form">
+            <div class="app__modal__template__form__header">
+              <h1>Register New Kata</h1>
+              <p>All fields are required</p>
+            </div>
+            <fieldset class="app__modal__template__form__fields">
+              <legend>Kata Field</legend>
+              <p>
+                <label for="kata-title">Title:</label>
+                <input id="kata-title" type="text" name="title" placeholder="ex) 입력과 출력사이"/>
+              </p>
+              <p>
+                <label for="kata-level">Difficulty Level:</label>
+                <select id="kata-level" name="difficulty_level">
+                  <option value="1">Level 1</option>
+                  <option value="2">Level 2</option>
+                  <option value="3">Level 3</option>
+                </select>
+              </p>
+              <p>
+                <label for="kata-description">Description:</label>
+                <input id="kata-description" type="text" name="description" placeholder="ex) 입력값을 반환해주세요"/>
+              </p>
+              <p>
+                <label for="kata-test">test1:</label>
+                <input id="kata-test" type="text" name="test" placeholder="ex) solution(1)"/>
+              </p>
+              <p>
+                <label for="kata-solution">solution1:</label>
+                <input id="kata-solution" type="text" name="solution" placeholder="ex) 1"/>
+              </p>
+            </fieldset>
+            <div>
+              <button>Register</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </body>
   <script src="/javascripts/index.js"></script>

@@ -1,11 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Lato|Press+Start+2P');
 
-
 body {
   margin: 0;
   height: 100vh;
   text-align: center;
-  font: 14px "Lato", "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px 'Lato', 'Lucida Grande', Helvetica, Arial, sans-serif;
   color: rgba(255, 255, 255, 0.8);
   background-color: black;
   box-sizing: border-box;
@@ -61,7 +60,7 @@ h1, h2, h3, p {
     display: flex;
     min-height: 60vh;
     border-radius: 10px;
-    box-shadow: 0px 0px 15px #FF6F61, 0px 0px 30px 5px rgb(248, 50, 32);
+    box-shadow: 0px 0px 15px #ff6f61, 0px 0px 30px 5px rgb(248, 50, 32);
 
     &__navigator {
       width: 140px;
@@ -85,21 +84,39 @@ h1, h2, h3, p {
         }
 
         li.active, li.active:hover {
-          color: #FEA166;
+          color: #fea166;
         }
       }
     }
 
     &__problems {
       flex: 1;
+      overflow: auto;
       text-align: center;
-      padding : 10px 20px;
+      padding: 10px 20px;
       border-radius: 0 10px 10px 0;
       background-color: #151518;
 
       &__info {
+        display:flex;
+        align-items: baseline;
         text-align: left;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
+
+        &__result {
+          flex: 1;
+        }
+
+        &__register {
+          text-align: center;
+          padding: 5px 10px;
+          border: 1px solid #fea166;
+          border-radius: 20px;
+
+          &:hover {
+            background-color: #fea166;
+          }
+        }
       }
 
       &__list {
@@ -113,7 +130,7 @@ h1, h2, h3, p {
 
             a {
               &:hover {
-                color: #FEA166;
+                color: #fea166;
               }
             }
           }
@@ -173,10 +190,10 @@ h1, h2, h3, p {
           transform: translateY(-120%);
         }
 
-        P {
+        p {
           height: 100%;
           padding: 10px;
-          border: 1px solid #FEA166;
+          border: 1px solid #fea166;
           border-radius: 10px;
           line-height: 1.5rem;
         }
@@ -209,10 +226,10 @@ h1, h2, h3, p {
           width: calc(100% - 20px);
           height: 150px;
           padding: 10px;
-          border: 1px solid #FEA166;
+          border: 1px solid #fea166;
           border-radius: 10px;
         }
-        
+
         &__submit {
           text-align: center;
 
@@ -221,11 +238,11 @@ h1, h2, h3, p {
             width: 50%;
             margin: 10px 0;
             padding: 5px;
-            border-radius: 15px;
+            border-radius: 20px;
             background-color: rgba(128, 128, 128, 0.4);
 
             &:hover {
-              background-color: #FF6F61;
+              background-color: #ff6f61;
             }
           }
         }
@@ -237,7 +254,7 @@ h1, h2, h3, p {
         text-align: left;
         height: 80px;
         padding: 10px;
-        border: 1px solid #FEA166;
+        border: 1px solid #fea166;
         border-radius: 10px;
 
         &__subject {
@@ -296,6 +313,62 @@ h1, h2, h3, p {
     z-index: 99;
     background-color: rgba(0, 0, 0, 0.7);
 
+    &.hidden {
+      display: none;
+    }
+
+    &__template {
+      width: 500px;
+      padding: 10px;
+      border-radius: 15px;
+      background-color: white;
+
+      &__form {
+        text-align: left;
+        color: black;
+
+        &__header {
+          text-align: center;
+          margin-bottom: 15px;
+
+          p.require {
+            color: red;
+          }
+        }
+
+        &__fields {
+          margin-bottom: 10px;
+          border-radius: 15px;
+
+          p {
+            display: flex;
+            align-items: baseline;
+            margin: 10px;
+            font-size: 0.8rem;
+
+            input {
+              flex: 1;
+              margin-left: 5px;
+            }
+          }
+        }
+
+        div {
+          text-align: center;
+          button {
+            padding: 5px 10px;
+            border: 1px solid #fea166;
+            border-radius: 20px;
+  
+            &:hover {
+              background-color: #ff6f61;
+              color: white;
+            }
+          }
+        }
+      }
+    }
+
     &__comment {
       margin-bottom: 30px;
       font-size: 3rem;
@@ -303,9 +376,8 @@ h1, h2, h3, p {
 
     &__button {
       padding: 5px 10px;
-      border: 1px solid #FEA166;
+      border: 1px solid #fea166;
       border-radius: 20px;
-      cursor: pointer;
     }
   }
 }
@@ -330,9 +402,8 @@ h1, h2, h3, p {
 
   &__button {
     padding: 5px 10px;
-    border: 1px solid #FEA166;
+    border: 1px solid #fea166;
     border-radius: 20px;
-    cursor: pointer;
   }
 }
 

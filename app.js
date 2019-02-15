@@ -22,6 +22,7 @@ app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
+  console.log('errornew');
   const err = new Error('Not Found');
 
   err.status = 404;
