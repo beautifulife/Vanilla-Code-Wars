@@ -1,13 +1,13 @@
-console.log('welcome to the codewars 🔥');
+console.log('Welcome to the codewars 🔥');
 
-const $registerKataButton = document.getElementsByClassName('app__main__problems__info__register')[0];
+const $modalOpenButton = document.getElementsByClassName('app__main__problems__info__register')[0];
 const $appModal = document.getElementsByClassName('app__modal')[0];
-const $registerKataForm = document.getElementsByClassName('app__modal__template__form')[0];
-const $registerKataFormHeader = document.getElementsByClassName('app__modal__template__form__header')[0];
+const $kataRegisterForm = document.getElementsByClassName('app__modal__template__form')[0];
+const $kataRegisterFormHeader = document.getElementsByClassName('app__modal__template__form__header')[0];
 
 $appModal.addEventListener('click', closeModal);
-$registerKataButton.addEventListener('click', showAddModal);
-$registerKataForm.addEventListener('submit', registerKata);
+$modalOpenButton.addEventListener('click', showModal);
+$kataRegisterForm.addEventListener('submit', registerKata);
 
 function closeModal(ev) {
   if (ev.target.classList.contains('app__modal')) {
@@ -15,7 +15,7 @@ function closeModal(ev) {
   }
 }
 
-function showAddModal(ev) {
+function showModal(ev) {
   $appModal.classList.remove('hidden');
 }
 
@@ -30,11 +30,10 @@ function registerKata(ev) {
     solution
   } = document.forms.register;
 
-  if (!title.value || !difficulty_level.value || !description.value || !test.value || !solution.value) {
-    return $registerKataFormHeader.lastElementChild.classList.add('require');
+  if (!title.value || !difficulty_level.value ||
+      !description.value || !test.value || !solution.value) {
+    return $kataRegisterFormHeader.lastElementChild.classList.add('require');
   }
-
-  console.log('form success');
 
   fetch('/register', {
     method: 'post',
@@ -58,11 +57,9 @@ function registerKata(ev) {
     .then((res) => {
       const responseMessage = document.createElement('p');
 
-      responseMessage.classList.add('registered');
+      responseMessage.classList.add(`${res.message}`);
       responseMessage.textContent = `Your Kata is ${res.message}`;
-      $registerKataForm.appendChild(responseMessage);
+      $kataRegisterForm.appendChild(responseMessage);
     })
     .catch(err => console.error(err));
-
-  console.log(ev, ev.currentTarget);
 }

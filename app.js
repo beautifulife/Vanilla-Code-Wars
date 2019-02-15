@@ -6,15 +6,17 @@ const index = require('./routes/index');
 
 const app = express();
 
-// Express Configuration
 app.set('view engine', 'ejs');
+
 app.use(sassMiddleware({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
   debug: true,
   outputStyle: 'compressed'
 }));
+
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -22,7 +24,6 @@ app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-  console.log('errornew');
   const err = new Error('Not Found');
 
   err.status = 404;

@@ -29,7 +29,7 @@
         <div class="app__main__problems">
           <div class="app__main__problems__info">
             <span class="app__main__problems__info__result"><%= problems.length %> Kata Found</span>
-            <button class="app__main__problems__info__register">Add Kata</button>
+            <button class="app__main__problems__info__register">Register Kata</button>
           </div>
           <ul class="app__main__problems__list">
             <% problems.forEach(function(problem) { %>
@@ -76,11 +76,11 @@
                 />
               </p>
               <p class="app__modal__template__form__fields__item">
-                <label for="kata-test">test1:</label>
+                <label for="kata-test">test:</label>
                 <input id="kata-test" type="text" name="test" placeholder="ex) solution(1)" />
               </p>
               <p class="app__modal__template__form__fields__item">
-                <label for="kata-solution">solution1:</label>
+                <label for="kata-solution">solution:</label>
                 <input id="kata-solution" type="text" name="solution" placeholder="ex) 1" />
               </p>
             </fieldset>

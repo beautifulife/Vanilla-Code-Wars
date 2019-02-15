@@ -1,7 +1,8 @@
-const express = require('express');
+const createError = require('http-errors');
 const vm = require('vm');
+const express = require('express');
 const mongoose = require('mongoose');
-const Problems = require('./model');
+const Problems = require('../models/Problem');
 
 const router = express.Router();
 
@@ -14,17 +15,35 @@ db.once('open', () => {
   console.log('success db connect');
 });
 
-function createInternalError(err) {
-  console.error(err);
-
-  const error = new Error('Internal Server Error');
-
-  error.status = 500;
-
-  return error;
-}
-
 /* GET home page. */
+router.get('/', (req, res, next) => {
+  Problems.find({}, (err, problems) => {
+    if (err) {
+      console.error(err);
+
+      return next(createError(500));
+    }
+
+    const levels = ['all', '1', '2', '3'];
+    const level = req.query.level || 'all';
+
+    problems = problems.filter((problem) => {
+      if (level === 'all' || problem.difficulty_level === parseInt(level, 10)) {
+        return true;
+      }
+
+      return false;
+    });
+
+    res.render('index', {
+      title: 'Codewars',
+      levels,
+      problems,
+      level
+    });
+  });
+});
+
 router.get('/problems/:problem_id', (req, res, next) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.problem_id)) {
     return next();
@@ -32,7 +51,9 @@ router.get('/problems/:problem_id', (req, res, next) => {
 
   Problems.findOne({ _id: req.params.problem_id }, (err, problem) => {
     if (err) {
-      return next(createInternalError(err));
+      console.error(err);
+
+      return next(createError(500));
     }
 
     if (!problem) {
@@ -41,8 +62,7 @@ router.get('/problems/:problem_id', (req, res, next) => {
 
     res.render('problem', {
       title: `Codewars-${problem.title}`,
-      problem,
-      testResult: ''
+      problem
     });
   });
 });
@@ -54,31 +74,32 @@ router.post('/problems/:problem_id', (req, res, next) => {
 
   Problems.findOne({ _id: req.params.problem_id }, (err, problem) => {
     if (err) {
-      return next(createInternalError(err));
+      console.error(err);
+
+      return next(createError(500));
     }
 
     const testResult = {
       numberOfTests: problem.tests.length,
-      numberOfCorrectAnswer: 0,
+      numberOfCorrectAnswers: 0,
       results: []
     };
-    const sendBox = {
+    const sandBox = {
       setTimeout: global.setTimeout,
       setInterval: global.setInterval
     };
-
-    problem.userSolution = req.body.solution;
+    const userSolution = req.body.solution;
 
     try {
       problem.tests.forEach((test) => {
         const testCodeResult = vm.runInNewContext(
           req.body.solution + test.code,
-          sendBox,
+          sandBox,
           { timeout: 5000 }
         );
 
         if (testCodeResult === test.solution) {
-          testResult.numberOfCorrectAnswer++;
+          testResult.numberOfCorrectAnswers++;
           testResult.results.push({
             testCodeResult,
             resultStatus: 'correct'
@@ -101,18 +122,21 @@ router.post('/problems/:problem_id', (req, res, next) => {
       return res.render('error', {
         title: `Codewars-${problem.title}(Error)`,
         problem,
+        userSolution,
         testResult,
         errorMessage: err.message
       });
     }
 
-    if (testResult.numberOfTests === testResult.numberOfCorrectAnswer) {
+    if (testResult.numberOfTests === testResult.numberOfCorrectAnswers) {
       Problems.updateOne(
-        { _id: req.params.problem_id},
+        { _id: req.params.problem_id },
         { solution_count: problem.solution_count + 1 },
-        (err) => {
+        (err, res) => {
           if (err) {
-            return next(createInternalError(err));
+            console.error(err);
+
+            return next(createError(500));
           }
         }
       );
@@ -120,12 +144,14 @@ router.post('/problems/:problem_id', (req, res, next) => {
       res.render('success', {
         title: `Codewars-${problem.title}(Success)`,
         problem,
+        userSolution,
         testResult
       });
     } else {
       res.render('failure', {
         title: `Codewars-${problem.title}(Failure)`,
         problem,
+        userSolution,
         testResult
       });
     }
@@ -133,51 +159,27 @@ router.post('/problems/:problem_id', (req, res, next) => {
 });
 
 router.post('/register', (req, res, next) => {
-  const {
-    title,
-    difficulty_level,
-    description,
-    tests,
-  } = req.body;
-    
-  Problems.create({
-    title,
-    solution_count: 0,
-    difficulty_level,
-    description,
-    tests
-  }, (err, problem) => { return next(createInternalError(err)); });
+  const { title, difficulty_level, description, tests } = req.body;
+
+  Problems.create(
+    {
+      title,
+      solution_count: 0,
+      difficulty_level,
+      description,
+      tests
+    },
+    (err, problem) => {
+      if (err) {
+        console.error(err);
+
+        return next(createError(500));
+      }
+    }
+  );
 
   res.json({
     message: 'registered'
-  });
-});
-
-router.get('/', (req, res, next) => {
-  Problems.find({}, (err, problems) => {
-    if (err) {
-      return next(createInternalError(err));
-    }
-
-    const levels = ['all', '1', '2', '3'];
-    const level = req.query.level || 'all';
-
-    problems = problems.filter((problem) => {
-      if (level === 'all' || problem.difficulty_level === parseInt(level, 10)) {
-        return true;
-      }
-
-      return false;
-    });
-
-    console.log(levels);
-
-    res.render('index', {
-      title: 'Codewars',
-      levels,
-      problems,
-      level
-    });
   });
 });
 

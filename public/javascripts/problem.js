@@ -1,6 +1,7 @@
-console.log('welcome to the problem page 🔥');
+console.log('Can you solve this problem!? 🔥');
 
-const $textarea = document.getElementById('editor');
+const $solutionTextarea = document.getElementById('editor');
+const $modal = document.getElementsByClassName('app__modal')[0];
 const $modalButton = document.getElementsByClassName('app__modal__button')[0];
 
 if ($modalButton) {
@@ -8,12 +9,10 @@ if ($modalButton) {
 }
 
 function closeModal(ev) {
-  const $modal = document.getElementsByClassName('app__modal')[0];
-
   $modal.style.display = 'none';
 }
 
-const editor = CodeMirror.fromTextArea($textarea, {
+const editor = CodeMirror.fromTextArea($solutionTextarea, {
   lineNumbers: true,
   lineWrapping: true,
   theme: 'monokai',
